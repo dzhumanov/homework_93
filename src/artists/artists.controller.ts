@@ -1,7 +1,18 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Model } from 'mongoose';
 import { Artist, ArtistDocument } from 'src/schemas/artist.schema';
+import { CreateArtistDto } from './create-artist.dto';
 
 @Controller('artists')
 export class ArtistsController {
@@ -22,5 +33,22 @@ export class ArtistsController {
     }
 
     return artist;
+  }
+
+  @Post()
+  @UseInterceptors(
+    FileInterceptor('photo', { dest: './public/uploads/artists' }),
+  )
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() artistData: CreateArtistDto,
+  ) {
+    const artist = new this.artistModel({
+      name: artistData.name,
+      info: artistData.info,
+      isPublished: artistData.isPublished,
+      photo: file ? '/uploads/artists' + file.filename : null,
+    });
+    return artist.save();
   }
 }

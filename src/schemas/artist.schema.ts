@@ -10,10 +10,7 @@ export class Artist {
 
   @Prop()
   photo: string;
-
-  @Prop({ required: true, min: 0 })
-  price: number;
-
+  
   @Prop({ default: false })
   isPublished: boolean;
 }

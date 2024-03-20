@@ -1,13 +1,19 @@
 import {
+  Body,
   Controller,
   Get,
   NotFoundException,
   Param,
+  Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Model } from 'mongoose';
 import { Album, AlbumDocument } from 'src/schemas/album.schema';
+import { CreateAlbumDto } from './create-album.dto';
 
 @Controller('albums')
 export class AlbumsController {
@@ -21,8 +27,9 @@ export class AlbumsController {
       return this.albumModel
         .find({ artist: artistId })
         .populate('artist', 'name');
+    } else {
+      return this.albumModel.find().populate('artist', 'name');
     }
-    return this.albumModel.find().populate('artist', 'name');
   }
 
   @Get(':id')
@@ -33,5 +40,23 @@ export class AlbumsController {
     }
 
     return album;
+  }
+
+  @Post()
+  @UseInterceptors(
+    FileInterceptor('image', { dest: './public/uploads/artists' }),
+  )
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() albumData: CreateAlbumDto,
+  ) {
+    const album = new this.albumModel({
+      name: albumData.name,
+      artist: albumData.artist,
+      date: albumData.date,
+      isPublished: albumData.isPublished,
+      image: file ? '/uploads/artists' + file.filename : null,
+    });
+    return album.save();
   }
 }
