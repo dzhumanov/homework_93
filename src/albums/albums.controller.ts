@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -58,5 +59,15 @@ export class AlbumsController {
       image: file ? '/uploads/artists' + file.filename : null,
     });
     return album.save();
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    const album = await this.albumModel.findByIdAndDelete(id);
+    if (!album) {
+      throw new NotFoundException('No such album!');
+    }
+
+    return album;
   }
 }

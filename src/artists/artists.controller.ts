@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -50,5 +51,15 @@ export class ArtistsController {
       photo: file ? '/uploads/artists' + file.filename : null,
     });
     return artist.save();
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    const artist = await this.artistModel.findByIdAndDelete(id);
+    if (!artist) {
+      throw new NotFoundException('No such artist!');
+    }
+
+    return artist;
   }
 }
