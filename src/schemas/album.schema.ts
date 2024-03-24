@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Artist } from './artist.schema';
 import mongoose from 'mongoose';
+import { Document } from 'mongoose';
 
 @Schema({ timestamps: true, versionKey: false })
 export class Album {
