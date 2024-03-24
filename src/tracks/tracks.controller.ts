@@ -7,11 +7,13 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Track, TrackDocument } from 'src/schemas/track.schema';
 import { CreateTrackDto } from './create-track.dto';
+import { TokenAuthGuard } from 'src/auth/token-auth.guard';
 
 @Controller('tracks')
 export class TracksController {
@@ -27,6 +29,7 @@ export class TracksController {
     return this.trackModel.find().populate('album', 'name');
   }
 
+  @UseGuards(TokenAuthGuard)
   @Post()
   async create(@Body() trackDto: CreateTrackDto) {
     const track = await this.trackModel.create({
