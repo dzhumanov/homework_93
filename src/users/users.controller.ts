@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Post,
   Req,
   UnprocessableEntityException,
@@ -43,5 +44,31 @@ export class UsersController {
   @Post('sessions')
   async login(@Req() req: Request) {
     return { message: 'Logged in.', user: req.user };
+  }
+
+  @Delete('sessions')
+  async deleteUser(@Req() req: Request) {
+    const headerValue = req.get('Authorization');
+
+    if (!headerValue) {
+      return { message: 'Error! No header!' };
+    }
+
+    const [_, token] = headerValue.split(' ');
+
+    if (!token) {
+      return { message: 'Error! No token!' };
+    }
+
+    const user = await this.userModel.findOne({ token });
+
+    if (!user) {
+      return { message: 'Error! No user!' };
+    }
+
+    user.generateToken();
+    await user.save();
+
+    return { message: 'User logged out.' };
   }
 }
