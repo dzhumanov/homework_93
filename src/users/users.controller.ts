@@ -24,6 +24,7 @@ export class UsersController {
         email: registerUserDto.email,
         password: registerUserDto.password,
         displayName: registerUserDto.displayName,
+        role: registerUserDto.role,
       });
 
       user.generateToken();
@@ -41,6 +42,6 @@ export class UsersController {
   @UseGuards(AuthGuard('local'))
   @Post('sessions')
   async login(@Req() req: Request) {
-    return ({message:"Logged in.", user: req.user});
+    return { message: 'Logged in.', user: req.user };
   }
 }

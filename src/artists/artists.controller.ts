@@ -16,6 +16,8 @@ import { Model } from 'mongoose';
 import { Artist, ArtistDocument } from 'src/schemas/artist.schema';
 import { CreateArtistDto } from './create-artist.dto';
 import { TokenAuthGuard } from 'src/auth/token-auth.guard';
+import { TokenPermitGuard } from 'src/auth/token-permit.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('artists')
 export class ArtistsController {
@@ -56,6 +58,8 @@ export class ArtistsController {
     return artist.save();
   }
 
+  @Roles('admin')
+  @UseGuards(TokenAuthGuard, TokenPermitGuard)
   @Delete(':id')
   async delete(@Param('id') id: string) {
     const artist = await this.artistModel.findByIdAndDelete(id);

@@ -23,7 +23,7 @@ export class TokenAuthGuard implements CanActivate {
       return false;
     }
 
-    const user = await this.userModel.find({ token });
+    const user = await this.userModel.findOne({ token });
 
     if (!user) {
       return false;
